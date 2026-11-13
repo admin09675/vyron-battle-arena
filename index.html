@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>VYRON - BATTLE ARENA</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080f1a;color:white;font-family:Arial;text-align:center}
+header{padding:15px;background:#111d30;border-bottom:2px solid #00b4ff}
+h1{margin:0;color:#00b4ff;letter-spacing:3px}
+p{color:#c5d9ef}
+canvas{display:block;width:100%;max-width:700px;height:65vh;margin:auto;background:#101d2b;touch-action:none}
+.controls{display:flex;justify-content:center;gap:12px;padding:15px}
+button{background:#182c45;color:white;border:1px solid #00b4ff;border-radius:12px;padding:15px 22px;font-size:17px}
+#status{color:#f4d03f;font-weight:bold}
+</style>
+</head>
+<body>
+<header>
+<h1>VYRON</h1>
+<p>BATTLE ARENA · DEMO 0.1</p>
+</header>
+<canvas id="game"></canvas>
+<p id="status">VALDUS · SẴN SÀNG CHIẾN ĐẤU</p>
+<div class="controls">
+<button onclick="move(-1)">◀</button>
+<button onclick="attack()">⚔ TẤN CÔNG</button>
+<button onclick="move(1)">▶</button>
+</div>
+<div class="controls">
+<button onclick="moveY(-1)">▲</button>
+<button onclick="moveY(1)">▼</button>
+</div>
+<script>
+const c=document.getElementById("game");
+const ctx=c.getContext("2d");
+let W,H;
+function resize(){
+ W=c.width=c.clientWidth*devicePixelRatio;
+ H=c.height=c.clientHeight*devicePixelRatio;
+}
+window.addEventListener("resize",resize);resize();
+let hero={x:0.5,y:0.72,hp:100};
+let enemy={x:0.5,y:0.28,hp:100};
+let message="VALDUS · SẴN SÀNG CHIẾN ĐẤU";
+function move(dx){
+ hero.x=Math.max(.08,Math.min(.92,hero.x+dx*.06));
+}
+function moveY(dy){
+ hero.y=Math.max(.48,Math.min(.9,hero.y+dy*.05));
+}
+function attack(){
+ if(Math.abs(hero.x-enemy.x)<.22 && Math.abs(hero.y-enemy.y)<.35){
+ enemy.hp=Math.max(0,enemy.hp-20);
+ message=enemy.hp===0?"CHIẾN THẮNG!":"ĐÃ GÂY 20 SÁT THƯƠNG!";
+ }else message="TIẾN LẠI GẦN ĐỐI THỦ!";
+ document.getElementById("status").textContent=message;
+}
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ ctx.fillStyle="#14263a";ctx.fillRect(0,0,W,H);
+ ctx.strokeStyle="#29445e";ctx.lineWidth=2;
+ for(let i=0;i<8;i++){
+  ctx.beginPath();ctx.moveTo(i*W/7,0);ctx.lineTo(i*W/7,H);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,i*H/7);ctx.lineTo(W,i*H/7);ctx.stroke();
+ }
+ function fighter(obj,color,name){
+  let x=obj.x*W,y=obj.y*H;
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.arc(x,y,Math.min(W,H)*.055,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="white";ctx.font="bold 14px Arial";
+  ctx.textAlign="center";ctx.fillText(name,x,y-32);
+  ctx.fillStyle="#222";ctx.fillRect(x-30,y+35,60,7);
+  ctx.fillStyle="#35e66b";ctx.fillRect(x-30,y+35,60*obj.hp/100,7);
+ }
+ fighter(enemy,"#d83b65","ĐỐI THỦ");
+ fighter(hero,"#00b4ff","VALDUS");
+ ctx.fillStyle="#f4d03f";ctx.font="bold 16px Arial";
+ ctx.textAlign="center";ctx.fillText("VYRON ARENA",W/2,H*.53);
+ requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
